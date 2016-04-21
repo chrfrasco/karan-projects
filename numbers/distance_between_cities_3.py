@@ -1,17 +1,16 @@
 """
-find 'as the crow flies' distance between two locations
-using the google maps geocode api.
+python 3
 
-credit to michael-dunn on stackoverflow for the haversine
-equation. http://stackoverflow.com/a/4913653/5130898
+convert currency and mass
 
-author: chrisitan scott
+adding volume, length, and maybe more in the future
+
+author: christian scott
 """
 
-from __future__ import division
-from math import radians, cos, sin, asin, sqrt
-from urllib2 import urlopen
 import json
+from urllib.request import urlopen
+from math import radians, cos, sin, asin, sqrt
 
 def check_response_status(*responses):
     statuses = []
@@ -49,17 +48,17 @@ def get_cities(api_key, city_1, city_2):
     request_2 = urlopen(
         'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s' 
         % (city_2, api_key))
-    response_1 = json.loads(request_1.read())
-    response_2 = json.loads(request_2.read())
+    response_1 = json.loads(request_1.read().decode('utf-8'))
+    response_2 = json.loads(request_2.read().decode('utf-8'))
 
     statuses = check_response_status(response_1, response_2)
 
     for city, status in zip((city_1, city_2), statuses):
         if status == 1:
-            print "Bad API key. Please try again."
+            print("Bad API key. Please try again.")
             exit()
         elif status == 2:
-            print "Could not find %s. Please try again." % (city)
+            print("Could not find %s. Please try again." % (city))
             exit()
     
     lat_1, long_1 = (response_1['results'][0]['geometry']['location']['lat'], 
@@ -76,10 +75,10 @@ def main():
     try:
         api_key = json.loads(open('api_keys.json').read())['googlemaps']
     except:
-        api_key = str(raw_input("Please enter your google maps geocode API key: "))
+        api_key = input("Please enter your google maps geocode API key: ")
 
-    city_1 = str(raw_input("First city: "))
-    city_2 = str(raw_input("Second city: "))
+    city_1 = input("First city: ")
+    city_2 = input("Second city: ")
 
     lat_1, lng_1, lat_2, lng_2, name_1, name_2 = get_cities(api_key, city_1, city_2)
     distance = haversine(lat_1, lng_1, lat_2, lng_2)
