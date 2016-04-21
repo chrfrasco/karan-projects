@@ -8,6 +8,7 @@ equation. http://stackoverflow.com/a/4913653/5130898
 author: chrisitan scott
 """
 
+from __future__ import division
 from math import radians, cos, sin, asin, sqrt
 from urllib2 import urlopen
 import json
