@@ -73,6 +73,8 @@ def currency():
 
     print "\nAs of %s, %s %s is worth %.2f %s\n" % (time, amount, 
                         from_currency, round(to_amount, 2), to_currency)
+def mass():
+    pass
 
 def main():
     currency()

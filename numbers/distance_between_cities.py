@@ -1,4 +1,12 @@
-# _*_ coding:utf-8 _*_
+"""
+find 'as the crow flies' distance between two locations
+using the google maps geocode api.
+
+credit to michael-dunn on stackoverflow for the haversine
+equation. http://stackoverflow.com/a/4913653/5130898
+
+author: chrisitan scott
+"""
 
 from math import radians, cos, sin, asin, sqrt
 from urllib2 import urlopen
