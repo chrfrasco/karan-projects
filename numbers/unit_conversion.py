@@ -74,10 +74,55 @@ def currency():
     print "\nAs of %s, %s %s is worth %.2f %s\n" % (time, amount, 
                         from_currency, round(to_amount, 2), to_currency)
 def mass():
-    pass
+    masses = {'ozg': 28.3495, 
+             'ozkg': 0.0283495, 
+             'ozlb': 0.0625, 
+             'goz': 0.035274, 
+             'gkg': 0.001, 
+             'glb': 0.00220462, 
+             'kgoz': 35.274, 
+             'kgg': 1000, 
+             'kglb': 2.20462, 
+             'lboz': 16, 
+             'lbg': 453.592, 
+             'lbkg': 0.453592
+             }
+    print ('1. gram\n'
+           '2. kilogram\n'
+           '3. ounce\n'
+           '4. pound\n')
+    
+    from_mass = str(raw_input("Starting unit? (1-4) "))
+
+    while not 0 < int(from_mass) < 5 or not is_numerical(from_mass):
+        print "Please enter a number from 1 to 4."
+        from_mass = int(raw_input("Starting unit? (1-4) "))
+
+    to_mass = str(raw_input("Unit you'd like to convert to? (1-4) "))
+
+    while not 0 < int(to_mass) < 5 or not is_numerical(to_mass) or from_mass == to_mass:
+        print "Please enter a number from 1 to 4. Must be different from first unit."
+        from_mass = int(raw_input("Unit you'd like to convert to? (1-4) "))
+
+    start_mass = str(raw_input("Enter the starting mass: "))
+
+    while not is_numerical(start_mass):
+        print "Non-numerical quantity entered. Please try again."
+        start_mass = str(raw_input("Enter the starting mass: "))
+
+    from_mass, to_mass = int(from_mass), int(to_mass)
+
+    units = ['', 'g', 'kg', 'oz', 'lb']
+
+    key = ''.join((units[from_mass], units[to_mass]))
+
+    final_mass = float(start_mass) * masses[key]
+
+    print "%s %s is equal to %.2f %s" % (start_mass, units[from_mass], final_mass, units[to_mass])
 
 def main():
     currency()
+    mass()
 
 if __name__ == "__main__":
     main()
