@@ -16,6 +16,12 @@ def is_numerical(str):
     except ValueError:
         return False
 
+def check_currency_code(code):
+    if len(code) == 3 and not any(char.isdigit() for char in inputString):
+        return False
+    else:
+        return True
+
 def get_input():
     amount = input("Enter amount to convert: ").replace(' ', '')
 
@@ -25,8 +31,19 @@ def get_input():
 
     from_currency = input("Enter your source currency "
         "(3 digit code): ").upper().replace(' ', '')
+
+    while check_currency_code(from_currency):
+        print("Invalid currency code")
+        from_currency = from_currency = input("Enter your source currency "
+        "(3 digit code): ").upper().replace(' ', '')
+
     to_currency = input("Enter the currency you would like "
         "to convert to (3 digit code): ").upper().replace(' ', '')
+
+    while check_currency_code(from_currency):
+        print("Invalid currency code")
+        to_currency = to_currency = input("Enter the currency you would "
+            "like to convert to (3 digit code): ").upper().replace(' ', '')
 
     return amount, from_currency, to_currency
 
@@ -35,13 +52,13 @@ def load_response(api_key, from_currency, to_currency):
         'http://apilayer.net/api/live?access_key=%s&currencies=%s,%s&format=1' 
         % (api_key, from_currency, to_currency))
 
-    response = json.loads(request.read())
+    response = json.loads(request.read().decode('utf-8'))
 
     try:
         from_rate = response['quotes']['USD%s' % (from_currency)]
         to_rate = response['quotes']['USD%s' % (to_currency)]
         return from_rate, to_rate
-    except Exception, e:
+    except Exception as e:
         return e
 
 def currency():
@@ -101,7 +118,7 @@ def mass():
            '3. ounce\n'
            '4. pound\n')
     
-    from_mass = str(raw_input("Starting unit? (1-4) "))
+    from_mass = input("Starting unit? (1-4) ")
 
     while (not 0 < int(from_mass) < 5 or
            not is_numerical(from_mass)):
@@ -135,18 +152,18 @@ def mass():
                                          final_mass, units[to_mass]))
 
 def main():
-	print("What kind of conversion would you like to do?",
-		  "",
-		  "1. Currency",
-		  "2. Mass\n",
-		  sep="\n")
-	choice = int(input("Enter your choice: "))
-	while not 0 < choice < 3:
-		choice = int(input("Please enter a valid choice: "))
-	if choice == 1:
-	    currency()
+    print("What kind of conversion would you like to do?",
+          "",
+          "1. Currency",
+          "2. Mass\n",
+          sep="\n")
+    choice = int(input("Enter your choice: "))
+    while not 0 < choice < 3:
+        choice = int(input("Please enter a valid choice: "))
+    if choice == 1:
+        currency()
     elif choice == 2:
-    	mass()
+        mass()
 
 
 if __name__ == "__main__":
