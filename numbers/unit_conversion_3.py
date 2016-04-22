@@ -17,7 +17,7 @@ def is_numerical(str):
         return False
 
 def check_currency_code(code):
-    if len(code) == 3 and not any(char.isdigit() for char in inputString):
+    if len(code) == 3 and all(char.isalpha() for char in code):
         return False
     else:
         return True
