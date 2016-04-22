@@ -1,15 +1,13 @@
 """
-python 2
+python 3
 
 convert currency and mass
 
-adding volume, length, and maybe more in the future
-
 author: christian scott
 """
-from __future__ import division
+
 import json, datetime, re, sys
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 def is_numerical(str):
     try:
@@ -19,16 +17,16 @@ def is_numerical(str):
         return False
 
 def get_input():
-    amount = str(raw_input("Enter amount to convert: ")).replace(' ', '')
+    amount = input("Enter amount to convert: ").replace(' ', '')
 
     while not is_numerical(amount):
-        raw_input("Non-numerical amount entered. Press enter to try again.")
-        amount = str(raw_input("Enter amount to convert: ")).replace(' ', '')
+        input("Non-numerical amount entered. Press enter to try again.")
+        amount = input("Enter amount to convert: ").replace(' ', '')
 
-    from_currency = str(raw_input("Enter your source currency "
-        "(3 digit code): ")).upper().replace(' ', '')
-    to_currency = str(raw_input("Enter the currency you would like "
-        "to convert to (3 digit code): ")).upper().replace(' ', '')
+    from_currency = input("Enter your source currency "
+        "(3 digit code): ").upper().replace(' ', '')
+    to_currency = input("Enter the currency you would like "
+        "to convert to (3 digit code): ").upper().replace(' ', '')
 
     return amount, from_currency, to_currency
 
@@ -50,7 +48,7 @@ def currency():
     try:
         api_key = json.loads(open('api_keys.json').read())['currency']
     except:
-        api_key = str(raw_input("Please enter your currencylayer API key: "))
+        api_key = input("Please enter your currencylayer API key: ")
 
     if len(sys.argv) == 1:
         amount, from_currency, to_currency = get_input()
@@ -59,19 +57,18 @@ def currency():
         args = [arg.upper().replace(' ', '') for arg in sys.argv][1:]
         amount, from_currency, to_currency = args
         while not is_numerical(amount):
-            raw_input("Non-numerical amount entered. "
+            input("Non-numerical amount entered. "
                 "Press enter to try again.")
-            amount = str(raw_input("Enter amount to convert: ")
-                            ).replace(' ', '')
+            amount = input("Enter amount to convert: ").replace(' ', '')
 
     else:
-        print "Wrong number of command line arguments."
+        print("Wrong number of command line arguments.")
         amount, from_currency, to_currency = get_input()
 
     response = load_response(api_key, from_currency, to_currency)
 
     while type(response) != tuple:
-        raw_input('\nYou have entered one or more invalid '
+        input('\nYou have entered one or more invalid '
                   'currency codes. Press enter to try again.')
         amount, from_currency, to_currency = get_input()
         response = load_response(api_key, from_currency, to_currency)
@@ -82,8 +79,8 @@ def currency():
 
     time = re.findall(r"\d+-\d+-\d+", str(datetime.datetime.now()))[0]
 
-    print "\nAs of %s, %s %s is worth %.2f %s\n" % (time, amount, 
-                        from_currency, round(to_amount, 2), to_currency)
+    print("\nAs of %s, %s %s is worth %.2f %s\n" % (time, amount, 
+                        from_currency, round(to_amount, 2), to_currency))
 def mass():
     masses = {'ozg': 28.3495, 
              'ozkg': 0.0283495, 
@@ -108,23 +105,23 @@ def mass():
 
     while (not 0 < int(from_mass) < 5 or
            not is_numerical(from_mass)):
-        print "Please enter a number from 1 to 4."
-        from_mass = str(raw_input("Starting unit? (1-4) "))
+        print("Please enter a number from 1 to 4.")
+        from_mass = input("Starting unit? (1-4) ")
 
-    to_mass = str(raw_input("Unit you'd like to convert to? (1-4) "))
+    to_mass = input("Unit you'd like to convert to? (1-4) ")
 
     while ((not 0 < int(to_mass) < 5) or
            not is_numerical(to_mass) or
            from_mass == to_mass):
-        print ("Please enter a number from 1 to 4. "
+        print("Please enter a number from 1 to 4. "
                "Must be different from first unit.")
-        to_mass = str(raw_input("Unit you'd like to convert to? (1-4) "))
+        to_mass = input("Unit you'd like to convert to? (1-4) ")
 
-    start_mass = str(raw_input("Enter the starting mass: "))
+    start_mass = input("Enter the starting mass: ")
 
     while not is_numerical(start_mass):
-        print "Non-numerical quantity entered. Please try again."
-        start_mass = str(raw_input("Enter the starting mass: "))
+        print("Non-numerical quantity entered. Please try again.")
+        start_mass = input("Enter the starting mass: ")
 
     from_mass, to_mass = int(from_mass), int(to_mass)
 
@@ -134,12 +131,23 @@ def mass():
 
     final_mass = float(start_mass) * masses[key]
 
-    print "%s %s is equal to %.2f %s" % (start_mass, units[from_mass], 
-                                         final_mass, units[to_mass])
+    print("%s %s is equal to %.2f %s" % (start_mass, units[from_mass], 
+                                         final_mass, units[to_mass]))
 
 def main():
-    currency()
-    mass()
+	print("What kind of conversion would you like to do?",
+		  "",
+		  "1. Currency",
+		  "2. Mass\n",
+		  sep="\n")
+	choice = int(input("Enter your choice: "))
+	while not 0 < choice < 3:
+		choice = int(input("Please enter a valid choice: "))
+	if choice == 1:
+	    currency()
+    elif choice == 2:
+    	mass()
+
 
 if __name__ == "__main__":
     main()

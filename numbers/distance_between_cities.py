@@ -1,4 +1,6 @@
 """
+for use with python 2
+
 find 'as the crow flies' distance between two locations
 using the google maps geocode api.
 
