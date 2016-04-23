@@ -77,7 +77,7 @@ def get_input(quantity):
 
             print("Currency codes may only consist of three letters "
                   "(EUR, NZD, USD etc)."
-                  "Please try again.")
+                  " Please try again.")
             from_code = input("Enter the source currency: ").upper()
             to_code = input("Enter the currency you would like to convert to: "
                             ).upper()
@@ -120,13 +120,21 @@ def get_input(quantity):
 
 def load_response(api_key, from_currency, to_currency):
 
-    request = urlopen(
-        'http://apilayer.net/api/live?access_key=%s&currencies=%s,%s&format=1'
-        % (api_key, from_currency, to_currency))
+    try:
 
-    response = json.loads(request.read().decode('utf-8'))
+        request = urlopen(
+            "http://apilayer.net/api/"
+            "live?access_key=%s&currencies=%s,%s&format=1"
+            % (api_key, from_currency, to_currency))
 
-    return response
+        response = json.loads(request.read().decode('utf-8'))
+
+        return response
+
+    except:
+
+        print("Must be able to connect to the internet to convert currency.")
+        exit()
 
 
 def currency(from_currency, to_currency, user_currency):
