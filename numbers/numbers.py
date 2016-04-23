@@ -22,9 +22,9 @@ def fibb(n, upto=True):
 def is_prime(n):
     if n==2 or n==3: return True
     if n%2==0 or n<2: return False
-    for i in range(3,int(n**0.5)+1,2):   # only odd numbers
+    for i in range(3,int(n**0.5)+1,2):
         if n%i==0:
-            return False    
+            return False
 
     return True
 
@@ -40,7 +40,7 @@ def next_prime():
 tile_cost = lambda cost, width, height: cost * width * height
 
 def mortgage_calc():
-	
+
 
 def collatz_conjecture(n):
 	if n <= 1 or type(n) != int:
@@ -57,13 +57,3 @@ def collatz_conjecture(n):
 			n = 1 + n * 3
 
 	return count
-
-
-
-
-
-
-
-
-
-

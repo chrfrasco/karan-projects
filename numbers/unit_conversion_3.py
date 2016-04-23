@@ -57,9 +57,9 @@ def load_response(api_key, from_currency, to_currency):
     try:
         from_rate = response['quotes']['USD%s' % (from_currency)]
         to_rate = response['quotes']['USD%s' % (to_currency)]
-        return from_rate, to_rate
+        return from_rate, to_rate, False
     except Exception as e:
-        return e
+        return _, _, e
 
 def currency():
     try:
@@ -150,6 +150,21 @@ def mass():
 
     print("%s %s is equal to %.2f %s" % (start_mass, units[from_mass], 
                                          final_mass, units[to_mass]))
+
+def length():
+    pass
+
+def temp(from_temp, to_temp, user_temp):
+    if from_temp == 'c':
+        user_temp = user_temp + 273.15
+    elif from_temp == 'f':
+        user_temp = (user_temp + 459.67) * (5/9)
+    if to_temp == 'k':
+        return user_temp
+    elif to_temp == 'c':
+        return user_temp - 273.15
+    elif to_temp == 'f':
+        return (user_temp / (5/9)) - 459.67
 
 def main():
     print("What kind of conversion would you like to do?",
