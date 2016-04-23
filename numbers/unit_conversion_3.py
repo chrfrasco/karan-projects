@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 Convert currency, mass, length and time.
 
@@ -12,8 +13,8 @@ import json
 units = {
     'mass': {
         'g': 1,
-        'oz': 0.035274, 
-        'kg': 0.001, 
+        'oz': 0.035274,
+        'kg': 0.001,
         'lb': 0.00220462,
     },
 
@@ -69,14 +70,17 @@ def get_input(quantity):
     if quantity == "currency":
 
         from_code = input("Enter the source currency: ").upper()
-        to_code = input("Enter the currency you would like to convert to: ").upper()
+        to_code = input("Enter the currency you would like to convert to: "
+                        ).upper()
 
         while not valid_currency_codes(from_code, to_code):
 
-            print("Currency codes may only consist of three letters. "
+            print("Currency codes may only consist of three letters "
+                  "(EUR, NZD, USD etc)."
                   "Please try again.")
             from_code = input("Enter the source currency: ").upper()
-            to_code = input("Enter the currency you would like to convert to: ").upper()
+            to_code = input("Enter the currency you would like to convert to: "
+                            ).upper()
 
         user_amount = input("Enter amount to convert: ")
 
@@ -108,7 +112,8 @@ def get_input(quantity):
 
         while not valid_number(user_amount):
 
-            user_amount = input("Non-numeric amount entered. Please try again: ")
+            user_amount = input("Non-numeric amount entered. "
+                                "Please try again: ")
 
         return from_unit, to_unit, user_amount
 
@@ -116,7 +121,7 @@ def get_input(quantity):
 def load_response(api_key, from_currency, to_currency):
 
     request = urlopen(
-        'http://apilayer.net/api/live?access_key=%s&currencies=%s,%s&format=1' 
+        'http://apilayer.net/api/live?access_key=%s&currencies=%s,%s&format=1'
         % (api_key, from_currency, to_currency))
 
     response = json.loads(request.read().decode('utf-8'))
@@ -136,7 +141,7 @@ def currency(from_currency, to_currency, user_currency):
 
     response = load_response(api_key, from_currency, to_currency)
 
-    if response["success"] == True:
+    if response["success"]:
 
         try:
 
@@ -154,12 +159,12 @@ def currency(from_currency, to_currency, user_currency):
 
             print("%s is not a valid currency code." % to_currency)
 
-        from_rate, to_rate, user_currency = map(float, 
-                            (from_rate, to_rate, user_currency))
+        from_rate, to_rate, user_currency = map(float, (
+                            from_rate, to_rate, user_currency))
 
         return user_currency / from_rate * to_rate
 
-    elif response["success"] == False:
+    elif not response["success"]:
 
         print("Error:")
 
@@ -183,7 +188,8 @@ def mass(from_mass, to_mass, user_mass):
 
 def length(from_length, to_length, user_length):
 
-    return float(user_length) / units['length'][from_length] * units['length'][to_length]
+    return float(user_length) / units['length'][from_length] * \
+                units['length'][to_length]
 
 
 def time(from_time, to_time, user_time):
@@ -225,8 +231,8 @@ def main():
         from_unit, to_unit, user_amount = get_input('time')
         final_amount = time(from_unit, to_unit, user_amount)
 
-    print("%s %s is equivalent to %.2f %s." % 
-                    (user_amount, from_unit, final_amount, to_unit))
+    print("%s %s is equivalent to %.2f %s." % (
+        user_amount, from_unit, final_amount, to_unit))
 
 if __name__ == "__main__":
     main()
