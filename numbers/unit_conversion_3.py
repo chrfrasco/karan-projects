@@ -1,51 +1,79 @@
 """
-python 3
+Convert currency, mass, length and time.
 
-convert currency and mass
+Currency conversion done using currencylayer API.
 
 author: christian scott
 """
 
-import json, datetime, re, sys
-from urllib.request import urlopen
+units = {
+    'mass': {
+        'g': 1
+        'oz': 0.035274, 
+        'kg': 0.001, 
+        'lb': 0.00220462,
+    },
 
-def is_numerical(str):
-    try:
-        float(str)
-        return True
-    except ValueError:
-        return False
+    'length': {
+        'm': 1
+        'mm': 1000,
+        'cm': 100,
+        'km': 0.001,
+        'ft': 3.28084,
+        'in': 39.3701
+    },
 
-def check_currency_code(code):
-    if len(code) == 3 and all(char.isalpha() for char in code):
-        return False
+    'time': {
+        's': 1
+        'ms': 1000,
+        'min': 1/60,
+        'hr': 1/3600,
+        'day': 1/86400,
+        'yr': 1/31557600
+    }
+}
+
+
+def valid_currency_codes(*codes):
+    for code in codes:
+        if len(code) == 3 and all(char.isalpha() for char in code):
+            pass
+        else:
+            return False
+    return True
+
+
+def get_input(quantity):
+    if quantity == "currency":
+        from_code = input("Enter the source currency: ")
+        to_code = input("Enter the currency you would like to convert to: ")
+        while not valid_currency_codes(from_code, to_code):
+            print("Currency codes may only consist of three letters. "
+                  "Please try again. ")
+            from_code = input("Enter the source currency: ")
+            to_code = input("Enter the currency you would like to convert to: ")
+
+        user_amount = input("Enter amount to convert: ")
+        while not all(char.isnumeric() for char in user_amount):
+            user_amount = input("Enter amount to convert: ")
+
     else:
-        return True
+        choices = ', '.join(units[quantity].keys())
+        print("Can convert between %s." % choices)
 
-def get_input():
-    amount = input("Enter amount to convert: ").replace(' ', '')
+        from_unit = input("Enter the starting unit: ")
+        while from_unit not in choices:
+            from_unit = input("Please enter a valid starting unit: ")
+        to_unit = input("Enter the unit you'd like to convert to: ")
+        while to_unit not in choices or to_unit == from_unit:
+            to_unit == input("Please enter a valid starting unit."
+                             "Must be different to the starting unit: ")
+        user_amount = input("Enter the starting %s: " % quantity)
+        while not all(char.isnumeric() for char in user_amount):
+            user_amount = input("Non-numeric amount entered. Please try again: ")
 
-    while not is_numerical(amount):
-        input("Non-numerical amount entered. Press enter to try again.")
-        amount = input("Enter amount to convert: ").replace(' ', '')
+        return from_unit, to_unit, user_amount
 
-    from_currency = input("Enter your source currency "
-        "(3 digit code): ").upper().replace(' ', '')
-
-    while check_currency_code(from_currency):
-        print("Invalid currency code")
-        from_currency = from_currency = input("Enter your source currency "
-        "(3 digit code): ").upper().replace(' ', '')
-
-    to_currency = input("Enter the currency you would like "
-        "to convert to (3 digit code): ").upper().replace(' ', '')
-
-    while check_currency_code(from_currency):
-        print("Invalid currency code")
-        to_currency = to_currency = input("Enter the currency you would "
-            "like to convert to (3 digit code): ").upper().replace(' ', '')
-
-    return amount, from_currency, to_currency
 
 def load_response(api_key, from_currency, to_currency):
     request = urlopen(
@@ -54,132 +82,69 @@ def load_response(api_key, from_currency, to_currency):
 
     response = json.loads(request.read().decode('utf-8'))
 
-    try:
-        from_rate = response['quotes']['USD%s' % (from_currency)]
-        to_rate = response['quotes']['USD%s' % (to_currency)]
-        return from_rate, to_rate, False
-    except Exception as e:
-        return _, _, e
+    return response
 
-def currency():
+
+def currency(from_currency, to_currency, user_currency):
     try:
         api_key = json.loads(open('api_keys.json').read())['currency']
     except:
         api_key = input("Please enter your currencylayer API key: ")
 
-    if len(sys.argv) == 1:
-        amount, from_currency, to_currency = get_input()
-
-    elif len(sys.argv) == 4:
-        args = [arg.upper().replace(' ', '') for arg in sys.argv][1:]
-        amount, from_currency, to_currency = args
-        while not is_numerical(amount):
-            input("Non-numerical amount entered. "
-                "Press enter to try again.")
-            amount = input("Enter amount to convert: ").replace(' ', '')
-
-    else:
-        print("Wrong number of command line arguments.")
-        amount, from_currency, to_currency = get_input()
-
     response = load_response(api_key, from_currency, to_currency)
 
-    while type(response) != tuple:
-        input('\nYou have entered one or more invalid '
-                  'currency codes. Press enter to try again.')
-        amount, from_currency, to_currency = get_input()
-        response = load_response(api_key, from_currency, to_currency)
+    if response["success"] == "true":
+        try:
+            from_rate = response['quotes']['USD%s' % (from_currency)]
+        except:
+            print("%s is not a valid currency code." % from_currency)
+        try:
+            to_rate = response['quotes']['USD%s' % (to_currency)]
+        except:
+            print("%s is not a valid currency code." % to_currency)
 
-    from_rate, to_rate = response
+        return user_currency / from_currency * to_currency
 
-    to_amount = (float(amount) / float(from_rate)) * float(to_rate)
+    elif response["success"] == "false":
+        if response["error"]["code"] == "101":
+            print("Invalid currencylayer API key.")
+        elif response["error"]["code"] == "202":
+            print("Both currency codes are invalid.")
 
-    time = re.findall(r"\d+-\d+-\d+", str(datetime.datetime.now()))[0]
 
-    print("\nAs of %s, %s %s is worth %.2f %s\n" % (time, amount, 
-                        from_currency, round(to_amount, 2), to_currency))
-def mass():
-    masses = {'ozg': 28.3495, 
-             'ozkg': 0.0283495, 
-             'ozlb': 0.0625, 
-             'goz': 0.035274, 
-             'gkg': 0.001, 
-             'glb': 0.00220462, 
-             'kgoz': 35.274, 
-             'kgg': 1000, 
-             'kglb': 2.20462, 
-             'lboz': 16, 
-             'lbg': 453.592, 
-             'lbkg': 0.453592
-             }
+def mass(from_mass, to_mass, user_mass):
+    return user_mass / units['mass'][from_mass] * units['mass'][to_mass]
 
-    print ('1. gram\n'
-           '2. kilogram\n'
-           '3. ounce\n'
-           '4. pound\n')
-    
-    from_mass = input("Starting unit? (1-4) ")
 
-    while (not 0 < int(from_mass) < 5 or
-           not is_numerical(from_mass)):
-        print("Please enter a number from 1 to 4.")
-        from_mass = input("Starting unit? (1-4) ")
+def length(from_length, to_length, user_length):
+    return user_length / units['length'][from_lengths] * units['length'][to_length]
 
-    to_mass = input("Unit you'd like to convert to? (1-4) ")
 
-    while ((not 0 < int(to_mass) < 5) or
-           not is_numerical(to_mass) or
-           from_mass == to_mass):
-        print("Please enter a number from 1 to 4. "
-               "Must be different from first unit.")
-        to_mass = input("Unit you'd like to convert to? (1-4) ")
+def time(from_time, to_time, user_time):
+    return user_time / units['time'][from_time] * units['time'][to_time]
 
-    start_mass = input("Enter the starting mass: ")
-
-    while not is_numerical(start_mass):
-        print("Non-numerical quantity entered. Please try again.")
-        start_mass = input("Enter the starting mass: ")
-
-    from_mass, to_mass = int(from_mass), int(to_mass)
-
-    units = ['', 'g', 'kg', 'oz', 'lb']
-
-    key = ''.join((units[from_mass], units[to_mass]))
-
-    final_mass = float(start_mass) * masses[key]
-
-    print("%s %s is equal to %.2f %s" % (start_mass, units[from_mass], 
-                                         final_mass, units[to_mass]))
-
-def length():
-    pass
-
-def temp(from_temp, to_temp, user_temp):
-    if from_temp == 'c':
-        user_temp = user_temp + 273.15
-    elif from_temp == 'f':
-        user_temp = (user_temp + 459.67) * (5/9)
-    if to_temp == 'k':
-        return user_temp
-    elif to_temp == 'c':
-        return user_temp - 273.15
-    elif to_temp == 'f':
-        return (user_temp / (5/9)) - 459.67
 
 def main():
-    print("What kind of conversion would you like to do?",
-          "",
-          "1. Currency",
-          "2. Mass\n",
+    print("\n1. Currency",
+          "2. Mass",
+          "3. Length"
+          "4. Time\n",
           sep="\n")
-    choice = int(input("Enter your choice: "))
-    while not 0 < choice < 3:
-        choice = int(input("Please enter a valid choice: "))
-    if choice == 1:
-        currency()
-    elif choice == 2:
-        mass()
+    choice = input("What kind of conversion would you like to do? ")
 
+    while not 0 < choice < 5:
+        choice = input("Please enter a number between 1 and 4: ")
+
+    if choice == 1:
+        print(currency(*get_input('currency')))
+    elif choice == 2:
+        print(mass(*get_input('mass')))
+    elif choice == 3:
+        print(length(*get_input('length')))
+    elif choice == 4:
+        print(time(*get_input('time')))
+    else:
+        print("How did you do that?")
 
 if __name__ == "__main__":
     main()
