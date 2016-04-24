@@ -1,9 +1,11 @@
 """
 python 3
 
-convert currency and mass
+find 'as the crow flies' distance between two locations
+using the google maps geocode api.
 
-adding volume, length, and maybe more in the future
+credit to michael-dunn on stackoverflow for the haversine
+equation. http://stackoverflow.com/a/4913653/5130898
 
 author: christian scott
 """
@@ -25,17 +27,17 @@ def check_response_status(*responses):
 
 def haversine(lon1, lat1, lon2, lat2):
     """
-    Calculate the great circle distance between two points 
+    Calculate the great circle distance between two points
     on the earth (specified in decimal degrees)
     """
-    
+
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
-    dlon = lon2 - lon1 
-    dlat = lat2 - lat1 
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-    c = 2 * asin(sqrt(a)) 
-    r = 6371 
+    c = 2 * asin(sqrt(a))
+    r = 6371
     return c * r
 
 def get_cities(api_key, city_1, city_2):
@@ -43,10 +45,10 @@ def get_cities(api_key, city_1, city_2):
     city_2 = city_2.strip().replace(' ', '%20')
 
     request_1 = urlopen(
-        'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s' 
+        'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s'
         % (city_1, api_key))
     request_2 = urlopen(
-        'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s' 
+        'https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s'
         % (city_2, api_key))
     response_1 = json.loads(request_1.read().decode('utf-8'))
     response_2 = json.loads(request_2.read().decode('utf-8'))
@@ -60,13 +62,13 @@ def get_cities(api_key, city_1, city_2):
         elif status == 2:
             print("Could not find %s. Please try again." % (city))
             exit()
-    
-    lat_1, long_1 = (response_1['results'][0]['geometry']['location']['lat'], 
+
+    lat_1, long_1 = (response_1['results'][0]['geometry']['location']['lat'],
         response_1['results'][0]['geometry']['location']['lng'])
-    lat_2, long_2 = (response_2['results'][0]['geometry']['location']['lat'], 
+    lat_2, long_2 = (response_2['results'][0]['geometry']['location']['lat'],
         response_2['results'][0]['geometry']['location']['lng'])
 
-    name_1, name_2 = (response_1['results'][0]['formatted_address'], 
+    name_1, name_2 = (response_1['results'][0]['formatted_address'],
         response_2['results'][0]['formatted_address'])
 
     return lat_1, long_1, lat_2, long_2, name_1, name_2
@@ -83,7 +85,7 @@ def main():
     lat_1, lng_1, lat_2, lng_2, name_1, name_2 = get_cities(api_key, city_1, city_2)
     distance = haversine(lat_1, lng_1, lat_2, lng_2)
 
-    print("Distance between %s and %s as the crow flies is %.2fkm." % 
+    print("Distance between %s and %s as the crow flies is %.2fkm." %
         (name_1, name_2, distance))
 
 if __name__ == "__main__":
