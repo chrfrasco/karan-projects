@@ -1,71 +1,97 @@
 """
 takes an integer (maybe a float later?) between
-0 and 100 and spells it out in plain english.
+0 and 999 and spells it out in plain english.
 
-TODO: increase range to 1000 then add support for neg numbers
+TODO: add support for thousands and beyond. must be
+      a better method than current one, though.
 
 author: christian scott
 """
 
-digits = {
-    "ones": {
-        0: "",
-        1: "one",
-        2: "two",
-        3: "three",
-        4: "four",
-        5: "five",
-        6: "six",
-        7: "seven",
-        8: "eight",
-        9: "nine"
-    },
+import random as rand
 
-    "tens": {
-        0: "",
-        1: "ten",
-        2: "twenty",
-        3: "thirty",
-        4: "forty",
-        5: "fifty",
-        6: "sixty",
-        7: "seventy",
-        8: "eighty",
-        9: "ninety"
-    }
+digits = {
+
+    "ones": ["", "one", "two", "three", "four",
+             "five", "six", "seven", "eight", "nine"],
+
+    "teens": ["ten", "eleven", "twelve", "thirteen", "fourteen",
+              "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"],
+
+    "tens": ["", "ten", "twenty", "thirty", "forty",
+             "fifty", "sixty", "seventy", "eighty", "ninety"],
+
+    "hundreds": ["", "one hundred", "two hundred", "three hundred",
+                 "four hundred", "five hundred", "six hundred",
+                 "seven hundred", "eight hundred", "nine hundred"]
+
 }
 
-def get_columns(number):
-    tens = number // 10
-    ones = number - tens * 10
 
-    return tens, ones
+def pretty_print(hundreds, tens, ones):
 
-def translate(number):
-    tens, ones = get_columns(number)
+    if hundreds:
+        hundy = digits["hundreds"][hundreds]
+        if tens and ones:
+            if tens == 1:
+                teens = digits["teens"][ones]
+                return "%s and %s" % (hundy, teens)
+            else:
+                tenner = digits["tens"][tens]
+                uno = digits["ones"][ones]
+                return "%s and %s %s" % (hundy, tenner, uno)
 
-    if not (ones or tens):
-        return "zero"
+        elif tens:
+            tenner = digits["tens"][tens]
+            return "%s and %s" % (hundy, tenner)
 
-    elif ones and tens:
-        return "%s %s" % (digits["tens"][tens], digits["ones"][ones])
+        elif ones:
+            uno = digits["ones"][ones]
+            return "%s and %s" % (hundy, uno)
 
-    elif ones:
-        return "%s" % digits["ones"][ones]
+        else:
+            hundy = digits["hundreds"][hundreds]
+            return hundy
 
     elif tens:
-        return "%s" % digits["tens"][tens]
+        tenner = digits["tens"][tens]
+        if tens == 1:
+            teens = digits["teens"][ones]
+            return "%s" % (teens)
+        elif ones:
+            uno = digits["ones"][ones]
+            return "%s %s" % (tenner, uno)
+        else:
+            return "%s" % tenner
 
-def test_translate():
-    assert translate(0) == "zero"
-    assert translate(1) == "one"
-    assert translate(10) == "ten"
-    assert translate(12) == "ten two"
-    assert translate(45) == "forty five"
+    elif ones:
+        uno = digits["ones"][ones]
+        return "%s" % uno
 
-    assert get_columns(45) == (4, 5)
+    else:
+        return "zero"
 
-    print("tests pass")
 
-translate(45)
-test_translate()
+def translate(num):
+    assert type(num) == int
+    sign = "pos" if num >= 0 else "neg"
+    num = abs(num)
+    hundreds = num // 100
+    tens = (num - hundreds * 100) // 10
+    ones = num - (hundreds * 100) - (tens * 10)
+
+    if sign == "pos":
+        return pretty_print(hundreds, tens, ones)
+    elif sign == "neg":
+        return "negative " + pretty_print(hundreds, tens, ones)
+
+
+count = 0
+for i in range(-999, 1000):
+    try:
+        case = translate(i)
+    except Exception as e:
+        count += 1
+        print("{0} failed with error: {1}".format(i, e))
+
+print("of 1999, {0} failed".format(count))
