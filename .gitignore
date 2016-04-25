@@ -4,3 +4,13 @@ numbers/api_keys.json
 numbers/__pycache__/unit_conversion_3.cpython-35.pyc
 
 numbers/unit_conversion_tests.py
+
+classic_algorithms/test_sorting.py
+
+classic_algorithms/__pycache__/sorting.cpython-35.pyc
+
+classic_algorithms/__pycache__/sorting.cpython-35.pyc
+
+*.pyc
+
+*.pyc
