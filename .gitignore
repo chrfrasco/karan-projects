@@ -14,3 +14,5 @@ classic_algorithms/__pycache__/sorting.cpython-35.pyc
 *.pyc
 
 *.pyc
+
+*.json
