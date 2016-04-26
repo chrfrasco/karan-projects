@@ -13,6 +13,10 @@ classic_algorithms/__pycache__/sorting.cpython-35.pyc
 
 *.pyc
 
-*.pyc
-
 *.json
+
+classic_algorithms/__init__.py
+
+helpers/__init__.py
+
+numbers/__init__.py
