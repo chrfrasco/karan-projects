@@ -4,8 +4,30 @@ merge sort algorithms.
 
 made using psuedocode from wikipedia.
 
+these functions only work on lists of ints.
+
 author: christian scott
 """
+
+def insertion_sort(l):
+    for j in range(len(l)):
+        key = l[j]
+        i = j - 1
+        while i >= 0 and l[i] > key:
+            l[i + 1] = l[i]
+            i = i - 1
+        l[i + 1] = key
+    return l
+
+def reverse_insertion_sort(l):
+    for j in range(len(l), -1, -1):
+        key = l[j]
+        i = j + 1
+        while i <= len(l) and l[i] > key:
+            l[i - 1] = l[i]
+            i = i + 1
+        l[i - 1] = key
+    return l
 
 def bubble_sort(l):
     n = len(l)

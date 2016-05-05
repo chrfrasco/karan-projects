@@ -6,6 +6,7 @@ import random as rand
 import math
 from timing import *
 from emailz import send_email
+from datetime import datetime
 
 def get_distance(p1, p2):
     delta = []
@@ -27,14 +28,22 @@ def min_dist_brute(pairs):
             min_pair = pair
     return min_pair
 
+def right_pad(s, l):
+    return (s + ' ' * (l - len(s))) if len(s) < l else s
+
 if __name__ == '__main__':
+    print("running... ")
     message = ""
+    times = []
+    now = datetime.now().strftime('%H:%M')
     for length in [1, 10, 100, 1000, 10000, 100000]:
-        try:
-            points = [(rand.randint(0, 100), rand.randint(0, 100)) for _ in range(length)]
-            pairs = itertools.combinations(points, 2)
-            message += "Brute force method took {0}s to find min distance among {1} pairs.\n".format(timethis(min_dist_brute, pairs), length)
-        except:
-            message += "Failed to find min distance between {0} pairs".format(length)
-    message = "At {0}, your process finished.\n".format("$CURRENT_TIME") + message + "Love,\nPythontimerbot"
-    send_email("christianfscott@gmail.com", "All done", message)
+        print(right_pad("matching %d pairs... " % length, 25), end="")
+        points = [(rand.randint(0, 100), rand.randint(0, 100)) for _ in range(length)]
+        pairs = itertools.combinations(points, 2)
+        time = timethis(min_dist_brute, pairs)
+        message += "brute force method took %.5fs to find min distance among %d pairs\n\n" % ((time, length))
+        print("OK (%.5fs)" % time)
+    then = datetime.now().strftime('%H:%M')
+    message = "%sstarted at %s and finished at %s.\n\nlove,\npythontimerbot" % (message, now, then)
+    send_email("christianfscott@gmail.com", "testing 123", message)
+    print("email sent to christianfscott@gmail.com")

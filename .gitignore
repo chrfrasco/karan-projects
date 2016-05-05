@@ -20,3 +20,5 @@ classic_algorithms/__init__.py
 helpers/__init__.py
 
 numbers/__init__.py
+
+classic_algorithms/MergeWorstCase.java
