@@ -11,4 +11,3 @@ def sieve(upto):
     return [num*boo for num, boo in zip(range(upto), A)]
 
 print(sieve(30))
-    

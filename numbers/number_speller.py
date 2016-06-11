@@ -29,7 +29,6 @@ digits = {
 
 
 def pretty_print(hundreds, tens, ones):
-
     if hundreds:
         hundy = digits["hundreds"][hundreds]
         if tens and ones:
