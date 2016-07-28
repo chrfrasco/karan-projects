@@ -48,14 +48,3 @@ def translate(n):
 	ones = n - (hundreds * 100) - (tens * 10)
 	
 	return sign + wordify(hundreds, tens, ones)
-
-
-count = 0
-for i in range(0, 1000):
-    try:
-        case = translate(i)
-    except Exception as e:
-        count += 1
-        print("{0} failed with error: {1}".format(i, e))
-
-print("Of 999, {0} failed".format(count))
