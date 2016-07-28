@@ -1,24 +1,10 @@
+**/.idea/
 
-numbers/api_keys.json
+**/test*.*
 
-numbers/__pycache__/unit_conversion_3.cpython-35.pyc
+**.pyc
 
-numbers/unit_conversion_tests.py
+**.json
 
-classic_algorithms/test_sorting.py
+**/__init__.py
 
-classic_algorithms/__pycache__/sorting.cpython-35.pyc
-
-classic_algorithms/__pycache__/sorting.cpython-35.pyc
-
-*.pyc
-
-*.json
-
-classic_algorithms/__init__.py
-
-helpers/__init__.py
-
-numbers/__init__.py
-
-classic_algorithms/MergeWorstCase.java
