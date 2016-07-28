@@ -8,8 +8,6 @@ TODO: add support for thousands and beyond. must be
 author: christian scott
 """
 
-import random as rand
-
 digits = {
 
     "ones": ["", "one", "two", "three", "four",
@@ -19,78 +17,45 @@ digits = {
               "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"],
 
     "tens": ["", "ten", "twenty", "thirty", "forty",
-             "fifty", "sixty", "seventy", "eighty", "ninety"],
-
-    "hundreds": ["", "one hundred", "two hundred", "three hundred",
-                 "four hundred", "five hundred", "six hundred",
-                 "seven hundred", "eight hundred", "nine hundred"]
+             "fifty", "sixty", "seventy", "eighty", "ninety"]
 
 }
 
-
 def pretty_print(hundreds, tens, ones):
-    if hundreds:
-        hundy = digits["hundreds"][hundreds]
-        if tens and ones:
-            if tens == 1:
-                teens = digits["teens"][ones]
-                return "%s and %s" % (hundy, teens)
-            else:
-                tenner = digits["tens"][tens]
-                uno = digits["ones"][ones]
-                return "%s and %s %s" % (hundy, tenner, uno)
+	if hundreds:
+		top = digits["ones"][hundreds] + " hundred"*(bool(hundreds)) + " and "*(bool(tens) or bool(ones))
+	else:
+		top = ""
 
-        elif tens:
-            tenner = digits["tens"][tens]
-            return "%s and %s" % (hundy, tenner)
+	if tens == 1:
+		middle = digits["teens"][ones]
+		bottom = ""
+	else:
+		middle = digits["tens"][tens]
+		bottom = " "*(bool(tens) and bool(ones)) + digits["ones"][ones]
+		
+	full_number = top + middle + bottom
 
-        elif ones:
-            uno = digits["ones"][ones]
-            return "%s and %s" % (hundy, uno)
+	if not full_number:
+		return "zero"
+	else:
+		return full_number
 
-        else:
-            hundy = digits["hundreds"][hundreds]
-            return hundy
-
-    elif tens:
-        tenner = digits["tens"][tens]
-        if tens == 1:
-            teens = digits["teens"][ones]
-            return "%s" % (teens)
-        elif ones:
-            uno = digits["ones"][ones]
-            return "%s %s" % (tenner, uno)
-        else:
-            return "%s" % tenner
-
-    elif ones:
-        uno = digits["ones"][ones]
-        return "%s" % uno
-
-    else:
-        return "zero"
-
-
-def translate(num):
-    assert type(num) == int
-    sign = "pos" if num >= 0 else "neg"
-    num = abs(num)
-    hundreds = num // 100
-    tens = (num - hundreds * 100) // 10
-    ones = num - (hundreds * 100) - (tens * 10)
-
-    if sign == "pos":
-        return pretty_print(hundreds, tens, ones)
-    elif sign == "neg":
-        return "negative " + pretty_print(hundreds, tens, ones)
+def translate(n):
+	sign = "" if n >= 0 else "negative"
+	hundreds = n // 100
+	tens = (n - hundreds * 100) // 10
+	ones = n - (hundreds * 100) - (tens * 10)
+	
+	return sign + pretty_print(hundreds, tens, ones)
 
 
 count = 0
-for i in range(-999, 1000):
+for i in range(0, 1000):
     try:
         case = translate(i)
     except Exception as e:
         count += 1
         print("{0} failed with error: {1}".format(i, e))
 
-print("of 1999, {0} failed".format(count))
+print("Of 999, {0} failed".format(count))
