@@ -7,7 +7,6 @@ credit to Mike Hall for details on the Luhn algorithm
 author: christian scott
 """
 
-sample = "1234567890123452"
 
 def validator(card_number):
     double = []
@@ -27,5 +26,5 @@ def validator(card_number):
         return False
 
 if __name__ == "__main__":
-    print("{0} {1} a valid credit card number.".format(sample,
-                            "is" if validator(sample) else "is not"))
+    sample = "1234567890123452"
+    print("{0} {1} a valid credit card number.".format(sample, "is" if validator(sample) else "is not"))
