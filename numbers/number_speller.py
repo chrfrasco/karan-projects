@@ -21,7 +21,7 @@ digits = {
 
 }
 
-def pretty_print(hundreds, tens, ones):
+def wordify(hundreds, tens, ones):
 	if hundreds:
 		top = digits["ones"][hundreds] + " hundred"*(bool(hundreds)) + " and "*(bool(tens) or bool(ones))
 	else:
@@ -47,7 +47,7 @@ def translate(n):
 	tens = (n - hundreds * 100) // 10
 	ones = n - (hundreds * 100) - (tens * 10)
 	
-	return sign + pretty_print(hundreds, tens, ones)
+	return sign + wordify(hundreds, tens, ones)
 
 
 count = 0
