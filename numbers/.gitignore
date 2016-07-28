@@ -1,4 +1,5 @@
 # ignore all pyc shit
 
-/__pycache__/**
+__pycache__/**
 *.pyc
+.idea/**
